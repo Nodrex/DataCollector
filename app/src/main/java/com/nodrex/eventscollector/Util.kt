@@ -10,4 +10,12 @@ object Util {
         Log.d(EVENTS_COLLECTOR_TAG, info)
     }
 
+    fun logw(info: String) {
+        Log.w(EVENTS_COLLECTOR_TAG, info)
+    }
+
+    fun loge(info: String) {
+        Log.e(EVENTS_COLLECTOR_TAG, info)
+    }
+
 }

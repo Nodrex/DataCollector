@@ -87,8 +87,7 @@ class EventsCollector<T : Any> constructor(
      * 2. Calls `cancel()` to immediately stop all operations and release all resources.
      */
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Util.log("EventsCollector - Exception -> $throwable")
-        Util.log("EventsCollector - will deliver empty result, please check params in emit!")
+        Util.loge("EventsCollector - Exception -> ${throwable.stackTrace.joinToString("\n")}\n\t will deliver empty result, please check params in emit!")
         onResult(null, throwable)
         cancel()
     }
@@ -102,7 +101,7 @@ class EventsCollector<T : Any> constructor(
      * child coroutines launched within this scope (including the main collector and all `emit` jobs)
      * without affecting any external scope.
      */
-    private var scope: CoroutineScope? = CoroutineScope(dispatcher + Job() + exceptionHandler)
+    private var scope: CoroutineScope? = CoroutineScope(dispatcher + Job() + exceptionHandler) //TODO i need supervisor job cause if i batch of fata will be fault it should continue collecting others and just send this fault as error, but continue listening others
     private var propertyHandlers: MutableList<PropertyHandler<T>>?
     private var collectorJob: Job? = null
     private var emitterJob: Job? = null
@@ -143,9 +142,8 @@ class EventsCollector<T : Any> constructor(
      */
     private fun startCollector() {
         val currentFlowHolders = propertyHandlers ?: return
-        val flowsToZip = currentFlowHolders.mapNotNull { it.flow }
 
-        if (flowsToZip.size != currentFlowHolders.size || flowsToZip.isEmpty()) {
+        if (currentFlowHolders.isEmpty() || currentFlowHolders.all { it.flow == null }) {
             onResult.invoke(
                 null,
                 IllegalStateException("Collector was initialized with invalid properties or flows.")
@@ -155,18 +153,33 @@ class EventsCollector<T : Any> constructor(
         }
 
         collectorJob = scope?.launch {
-            val initialFlow = flowsToZip.first().map { listOf(it) }
-            val zippedFlow = flowsToZip.drop(1).fold(initialFlow) { acc, nextFlow ->
-                acc.zip(nextFlow) { list, newItem -> list + newItem }
+            // 1. MODIFICATION: Transform each flow to emit a Pair of (Property, Value)
+            val contextualFlows = currentFlowHolders.map { handler ->
+                handler.flow!!.map { value ->
+                    Pair(handler.property!!, value)
+                }
+            }
+
+            // 2. MODIFICATION: Zip the new contextual flows.
+            val initialFlow = contextualFlows.first().map { listOf(it) }
+            val zippedFlow = contextualFlows.drop(1).fold(initialFlow) { acc, nextFlow ->
+                acc.zip(nextFlow) { list, newItemPair -> list + newItemPair }
             }
 
             Util.log("EventsCollector - All flows[${currentFlowHolders.size}] are zipped")
             Util.log("EventsCollector started listening for events...")
             var collectedTimes = 0
-            zippedFlow.collect { resultValues ->
+            zippedFlow.collect { resultPairs -> // This is now a List<Pair<KProperty, Any>>
                 collectedTimes++
-                val constructor = classType.primaryConstructor
-                val finalObject = constructor?.call(*resultValues.toTypedArray())
+
+                // 3. MODIFICATION: Build the argument map and call the constructor by name.
+                val constructor = classType.primaryConstructor!!
+                val argumentsMap = resultPairs.associate { (property, value) ->
+                    val parameter = constructor.parameters.first { it.name == property.name }
+                    parameter to value
+                }
+                val finalObject = constructor.callBy(argumentsMap)
+                Util.logw("EventsCollector collected data[$finalObject]")
                 onResult.invoke(finalObject, null)
 
                 if (collectionCount != null && collectedTimes >= collectionCount) {
@@ -191,6 +204,7 @@ class EventsCollector<T : Any> constructor(
     fun <P> emit(property: KProperty1<T, P>, value: P) {
         //TODO we also need to check type of field in runtime to worn user of type mismatch like field is int and user gave us string, we need compilation error
         emitterJob = scope?.launch {
+            Util.log("EventsCollector - Emitting value for property: ${property.name}[${property.returnType}] with value: $value")
             val handler = propertyHandlers?.find { it.property == property }
             handler?.flow?.emit(value as Any)
         }
@@ -224,7 +238,7 @@ class EventsCollector<T : Any> constructor(
         ||---------------------------------------------------------
     """.trimMargin()
 
-        Util.log(logMessage)
+        Util.logw(logMessage)
     }
 
     /**
