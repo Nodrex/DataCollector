@@ -20,5 +20,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "EventsCollector"
-include(":app")
- 
+include(":DemoApp")
+include(":Annotations")
+include(":Processor")
+include(":EventsCollectorLib")
