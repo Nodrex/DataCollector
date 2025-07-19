@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.zip
@@ -20,60 +21,74 @@ import kotlin.reflect.full.primaryConstructor
  * as defined by the properties of a provided data class, and assembles them into
  * a new instance of that class.
  *
- * This class is useful for scenarios where multiple independent and asynchronous
- * data sources need to be resolved before an action can be taken. It uses a
- * combination of Kotlin Flow's `zip` operator and Reflection to dynamically
- * build a collection pipeline.
+ * This version of the collector uses a `zip`-based approach and is best suited for
+ * **sequential workflows**.
  *
- * The collector can be configured to run once or continuously. Upon completion or cancellation,
- * it releases all internal resources.
+ * ### Recommended Usage
+ * For the current version, the recommended use case is for a **single collection cycle**.
+ * This functionality is guaranteed to work reliably. After a single collection completes
+ * (or fails), the instance is cancelled and its resources are released. To collect another
+ * set of events, you must create a **new instance** of the `EventsCollector`.
  *
  * ### Lifecycle and Concurrency
  * This class manages its own `CoroutineScope`. A new `Job()` is added to the scope's
  * context (`dispatcher + Job() + exceptionHandler`) to create a self-contained, cancellable
  * lifecycle.
  *
+ * This version is "fail-fast": any error during an `emit` will cancel the entire
+ * collector. The user is responsible for creating a new instance to try again.
+ * Data emitted before a restart will be lost.
+ *
  * @param T The type of the data class to be collected and constructed. Must have a primary constructor.
  * @param classType data class `T` used as a template to determine the required properties and their types via reflection.
- * @param onResult A callback lambda that is invoked with the result. It receives either a populated instance of `T` on success, or a `Throwable` on failure.
- * @param collectionCount The number of times to collect a complete set of events. Defaults to `null`, which means it will collect continuously until `cancel()` is called. A value of `1` will cause it to collect once and then stop.
+ * @param onResult A callback lambda that is invoked with the result. It receives a populated instance of `T` on success, or a `Throwable` on failure.
+ * @param collectionCount The number of times to collect a complete set of events. `null` (the default) means it will collect continuously until `cancel()` is called.
  * @param dispatcher The `CoroutineDispatcher` on which the collection and result callback will be executed. Defaults to `Dispatchers.Default`.
  */
-class EventsCollector<T : Any> constructor(
+class EventsCollector<T : Any> @PublishedApi internal constructor(
     private val classType: KClass<T>,
     private val onResult: (result: T?, error: Throwable?) -> Unit,
     private val collectionCount: Int? = null,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    //TODO consider scope as well so it will be dismissed automatically when that scope will be canceled, for exmaple viewmodelscope or lifecyclescope
+    //TODO Phase 2 -> consider scope as well so it will be dismissed automatically when that scope will be canceled, for exmaple viewmodelscope or lifecyclescope
 ) {
 
     companion object {
         /**
-         * Creates and starts an [EventsCollector] that collects a specific number of times.
+         * Creates and starts an [EventsCollector] for continuous or a specific number of collections.
          *
          * This factory function provides a clean, type-safe API for creating a collector. Thanks to
-         * the use of `inline` and `reified`, you can specify the target data class `T` as a
-         * generic parameter (e.g., `start<UserData>(...)`) without needing to pass the
-         * class reference (`UserData::class`) manually.
+         * `inline` and `reified`, you can specify the target data class `T` as a
+         * generic parameter (e.g., `start<EventsData>(...)`) without needing to pass the
+         * class reference (`EventsData::class`) manually. This is the recommended way to create an instance.
          *
-         * The collector will automatically stop and release its resources after the specified
-         * `collectionCount` has been reached.
-         *
-         * @param T The data class type to be collected and instantiated. It must be `reified`,
-         * meaning its type information is preserved at runtime.
-         * @param onResult The callback lambda that will be invoked with either a populated instance
-         * of `T` on success or a `Throwable` on failure.
-         * @param collectionCount The exact number of times a complete set of events should be
-         * collected before the collector automatically stops.
-         * @param dispatcher The `CoroutineDispatcher` on which the collection and result callback
-         * will be executed. Defaults to `Dispatchers.Default`.
-         * @return A new instance of [EventsCollector] that has already started its collection process.
+         * @param T The data class type to be collected and instantiated. It must be `reified`.
+         * @param onResult The callback lambda that will be invoked for each successful collection or error.
+         * @param collectionCount The number of times to collect. Defaults to `null` for continuous collection.
+         * @param dispatcher The `CoroutineDispatcher` for the internal scope. Defaults to `Dispatchers.Default`.
+         * @return A new, active instance of [EventsCollector].
          */
         inline fun <reified T : Any> start(
             noinline onResult: (result: T?, error: Throwable?) -> Unit,
             collectionCount: Int? = null,
             dispatcher: CoroutineDispatcher = Dispatchers.Default,
         ) = EventsCollector(T::class, onResult, collectionCount, dispatcher)
+
+        /**
+         * Creates and starts an [EventsCollector] that collects exactly one time.
+         *
+         * This is a convenience factory function for the most common use case of collecting a single
+         * set of asynchronous data.
+         *
+         * @param T The data class type to be collected and instantiated. It must be `reified`.
+         * @param onResult The callback lambda that will be invoked once with the result or an error.
+         * @param dispatcher The `CoroutineDispatcher` for the internal scope. Defaults to `Dispatchers.Default`.
+         * @return A new, active instance of [EventsCollector] that will automatically cancel after one collection.
+         */
+        inline fun <reified T : Any> startSingleCollector(
+            noinline onResult: (result: T?, error: Throwable?) -> Unit,
+            dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        ) = EventsCollector(T::class, onResult, 1, dispatcher)
     }
 
     /**
@@ -87,7 +102,13 @@ class EventsCollector<T : Any> constructor(
      * 2. Calls `cancel()` to immediately stop all operations and release all resources.
      */
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Util.loge("EventsCollector - Exception -> ${throwable.stackTrace.joinToString("\n")}\n\t will deliver empty result, please check params in emit!")
+        Util.loge(
+            "Exception[${throwable.message}]\n${
+                throwable.stackTrace.joinToString(
+                    "\n"
+                )
+            }"
+        )
         onResult(null, throwable)
         cancel()
     }
@@ -95,14 +116,15 @@ class EventsCollector<T : Any> constructor(
     /**
      * ### Lifecycle and Concurrency
      * This class manages its own `CoroutineScope`. A new `Job()` is added to the scope's
-     * context (`dispatcher + Job() + exceptionHandler`) to create a self-contained, cancellable
+     * context (`dispatcher + SupervisorJob() + exceptionHandler`) to create a self-contained, cancellable
      * lifecycle. This is the cornerstone of **structured concurrency**. It ensures that when `cancel()`
      * is called on this instance, the parent `Job` is cancelled, which in turn reliably stops all
      * child coroutines launched within this scope (including the main collector and all `emit` jobs)
      * without affecting any external scope.
      */
-    private var scope: CoroutineScope? = CoroutineScope(dispatcher + Job() + exceptionHandler) //TODO i need supervisor job cause if i batch of fata will be fault it should continue collecting others and just send this fault as error, but continue listening others
-    private var propertyHandlers: MutableList<PropertyHandler<T>>?
+    private var scope: CoroutineScope? =
+        CoroutineScope(dispatcher + Job() + exceptionHandler)
+    private var propertyHandlers: MutableList<PropertyHandler<T>>? = null
     private var collectorJob: Job? = null
     private var emitterJob: Job? = null
 
@@ -114,8 +136,9 @@ class EventsCollector<T : Any> constructor(
     }
 
     init {
-        logInitialization()
         //require(dataClassInstance::class.isData) { "Only data classes are supported." } //TODO need to implement
+        logInitialization()
+
         propertyHandlers = classType.declaredMemberProperties.map {
             PropertyHandler(it)
         }.toMutableList()
@@ -146,44 +169,40 @@ class EventsCollector<T : Any> constructor(
         if (currentFlowHolders.isEmpty() || currentFlowHolders.all { it.flow == null }) {
             onResult.invoke(
                 null,
-                IllegalStateException("Collector was initialized with invalid properties or flows.")
+                IllegalStateException("Collector was initialized with invalid properties!")
             )
             cancel()
             return
         }
 
         collectorJob = scope?.launch {
-            // 1. MODIFICATION: Transform each flow to emit a Pair of (Property, Value)
             val contextualFlows = currentFlowHolders.map { handler ->
                 handler.flow!!.map { value ->
                     Pair(handler.property!!, value)
                 }
             }
 
-            // 2. MODIFICATION: Zip the new contextual flows.
             val initialFlow = contextualFlows.first().map { listOf(it) }
             val zippedFlow = contextualFlows.drop(1).fold(initialFlow) { acc, nextFlow ->
                 acc.zip(nextFlow) { list, newItemPair -> list + newItemPair }
             }
 
-            Util.log("EventsCollector - All flows[${currentFlowHolders.size}] are zipped")
-            Util.log("EventsCollector started listening for events...")
+            Util.log("All flows[${currentFlowHolders.size}] are zipped! Started listening for events...")
             var collectedTimes = 0
-            zippedFlow.collect { resultPairs -> // This is now a List<Pair<KProperty, Any>>
+            zippedFlow.collect { resultPairs ->
                 collectedTimes++
 
-                // 3. MODIFICATION: Build the argument map and call the constructor by name.
                 val constructor = classType.primaryConstructor!!
                 val argumentsMap = resultPairs.associate { (property, value) ->
                     val parameter = constructor.parameters.first { it.name == property.name }
                     parameter to value
                 }
                 val finalObject = constructor.callBy(argumentsMap)
-                Util.logw("EventsCollector collected data[$finalObject]")
+                Util.logw("Collected data[$finalObject]")
                 onResult.invoke(finalObject, null)
 
                 if (collectionCount != null && collectedTimes >= collectionCount) {
-                    Util.log("EventsCollector collected maximum of $collectionCount times, stopping collection.")
+                    Util.logw("Maximum number[$collectionCount] of collection was reached, canceling collector.")
                     this@EventsCollector.cancel()
                 }
             }
@@ -193,35 +212,37 @@ class EventsCollector<T : Any> constructor(
     /**
      * Emits a value for a specific property of the target data class `T`.
      *
-     * This function is thread-safe and routes the provided value to the correct
-     * internal flow corresponding to the given property. The collector will only
-     * produce a result once a value has been emitted for every property.
+     * This function is thread-safe. For each collection cycle, the internal `zip` operator will wait
+     * for the first available event for each property.
+     *
+     * **⚠️ Important Note on Concurrency:** This collector is designed for sequential workflows where the
+     * next set of data is fetched only after a result is received. If you emit multiple values for
+     * one property before other properties have been emitted for the current collection cycle, the
+     * internal `SharedFlow` (with `replay = 1`) will only hold the **latest** value. This can lead to
+     * "mixed data" results where the latest value for one property is paired with an earlier value
+     * of another. A future release will introduce a `BatchingEventsCollector` to handle these
+     * advanced concurrent cases safely.
      *
      * @param P The type of the property and the value being emitted.
      * @param property A KProperty1 reference to the target property (e.g., `UserData::name`).
      * @param value The value to emit. Its type must match the property's type.
      */
     fun <P> emit(property: KProperty1<T, P>, value: P) {
-        //TODO we also need to check type of field in runtime to worn user of type mismatch like field is int and user gave us string, we need compilation error
         emitterJob = scope?.launch {
-            Util.log("EventsCollector - Emitting value for property: ${property.name}[${property.returnType}] with value: $value")
+            ensureActive()
+
+            // Runtime check to prevent type mismatches that bypass compile-time checks.
+            val expectedType = property.returnType
+            if (value != null && value::class != expectedType.classifier) {
+                throw IllegalArgumentException("Type mismatch for property: ${property.name} -> " + "Expected type <$expectedType> but got value [$value] of type (${value::class.simpleName})")
+            }
+
+            Util.log("Emitting value for property: ${property.name}[$expectedType] with value: $value")
             val handler = propertyHandlers?.find { it.property == property }
             handler?.flow?.emit(value as Any)
         }
     }
 
-    /**
-     * Logs the initial configuration of the EventsCollector upon its creation.
-     *
-     * This is a private helper function used for debugging and diagnostics. It provides a
-     * formatted, multiline summary of the essential parameters the collector
-     * is working with, including:
-     * - The simple name of the target data class.
-     * - A list of all properties to be collected.
-     * - The configured collection count.
-     * - The CoroutineDispatcher being used for its internal scope.
-     */
-    //TODO we can improve logs to be a table kind
     private fun logInitialization() {
         val properties = classType.declaredMemberProperties
             .joinToString(separator = "\n") {
@@ -242,12 +263,10 @@ class EventsCollector<T : Any> constructor(
     }
 
     /**
-     * Immediately cancels all ongoing collection jobs and releases all internal resources,
-     * including flows, properties, and coroutine scopes.
+     * Immediately cancels all ongoing collection jobs and releases all internal resources.
      *
-     * After calling this method, the `EventsCollector` instance should be considered
-     * inactive and should not be used again. All internal references are nullified
-     * to prevent memory leaks.
+     * This method is idempotent and can be called multiple times. After calling, the
+     * `EventsCollector` instance should be considered inactive and should not be used again.
      */
     fun cancel() {
         emitterJob?.cancel()
@@ -262,7 +281,7 @@ class EventsCollector<T : Any> constructor(
         }
         propertyHandlers?.clear()
         propertyHandlers = null
-        Util.log("EventsCollector cancelled and all resources released.")
+        Util.log("Cancelled and all resources released.")
     }
 
 }
