@@ -18,8 +18,8 @@ import com.nodrex.eventscollectordemo.ui.theme.EventsCollectorTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
-@CollectableEventsData
-data class TaskData(val taskName: String, val status: String, val age: Int)
+//@CollectableEventsData
+class TaskData(val taskName: String, val status: String, val age: Int)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

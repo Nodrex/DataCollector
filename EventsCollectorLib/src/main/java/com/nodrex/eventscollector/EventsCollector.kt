@@ -51,7 +51,6 @@ class EventsCollector<T : Any> @PublishedApi internal constructor(
     private val onResult: (result: T?, error: Throwable?) -> Unit,
     private val collectionCount: Int? = null,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    //TODO Phase 2 -> consider scope as well so it will be dismissed automatically when that scope will be canceled, for exmaple viewmodelscope or lifecyclescope
 ) {
 
     companion object {
@@ -68,7 +67,9 @@ class EventsCollector<T : Any> @PublishedApi internal constructor(
          * @param collectionCount The number of times to collect. Defaults to `null` for continuous collection.
          * @param dispatcher The `CoroutineDispatcher` for the internal scope. Defaults to `Dispatchers.Default`.
          * @return A new, active instance of [EventsCollector].
+         * @throws IllegalArgumentException if the provided generic type `T` is not a `data class`.
          */
+        @Throws(IllegalArgumentException::class)
         inline fun <reified T : Any> start(
             noinline onResult: (result: T?, error: Throwable?) -> Unit,
             collectionCount: Int? = null,
@@ -85,7 +86,9 @@ class EventsCollector<T : Any> @PublishedApi internal constructor(
          * @param onResult The callback lambda that will be invoked once with the result or an error.
          * @param dispatcher The `CoroutineDispatcher` for the internal scope. Defaults to `Dispatchers.Default`.
          * @return A new, active instance of [EventsCollector] that will automatically cancel after one collection.
+         * @throws IllegalArgumentException if the provided generic type `T` is not a `data class`.
          */
+        @Throws(IllegalArgumentException::class)
         inline fun <reified T : Any> startSingleCollector(
             noinline onResult: (result: T?, error: Throwable?) -> Unit,
             dispatcher: CoroutineDispatcher = Dispatchers.Default,
@@ -137,7 +140,7 @@ class EventsCollector<T : Any> @PublishedApi internal constructor(
     }
 
     init {
-        //require(dataClassInstance::class.isData) { "Only data classes are supported." } //TODO need to implement
+        require(classType.isData) { "Only data classes are supported!" }
         logInitialization()
 
         propertyHandlers = classType.declaredMemberProperties.map {
