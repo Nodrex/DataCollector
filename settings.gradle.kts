@@ -1,12 +1,13 @@
 pluginManagement {
     repositories {
-        google {
+        /*google {
             content {
                 includeGroupByRegex("com\\.android.*")
                 includeGroupByRegex("com\\.google.*")
                 includeGroupByRegex("androidx.*")
             }
-        }
+        }*/
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -20,5 +21,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "EventsCollector"
-include(":app")
- 
+include(":DemoApp")
+include(":Annotations")
+include(":Processor")
+include(":EventsCollectorLib")
