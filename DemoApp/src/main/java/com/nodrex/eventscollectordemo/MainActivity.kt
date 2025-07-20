@@ -19,9 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.nodrex.eventscollector.Util
+import com.nodrex.eventscollector.annotations.CollectableEventsData
 import com.nodrex.eventscollectordemo.ui.theme.EventsCollectorTheme
 import kotlinx.coroutines.launch
 
+@CollectableEventsData
 data class TaskData(val taskName: String, val status: String, val age: Int)
 
 class MainActivity : ComponentActivity() {
