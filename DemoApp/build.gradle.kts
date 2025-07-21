@@ -38,19 +38,23 @@ android {
     buildFeatures {
         compose = true
     }
+
+    lint {
+        abortOnError = true // This will fail the build if any lint error is found
+        checkReleaseBuilds = true // Lint will run automatically for release builds
+    }
 }
 
 dependencies {
     implementation(project(":EventsCollectorLib"))
-    implementation(project(":Annotations")) // <-- ADD THIS LINE
-    ksp(project(":Processor")) // Tell KSP to use your processor on this module's code
+    implementation(project(":Annotations"))
+    ksp(project(":Processor"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    //implementation(libs.ksp.api)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

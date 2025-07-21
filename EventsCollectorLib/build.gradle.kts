@@ -30,9 +30,16 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    lint {
+        checkDependencies = false
+        abortOnError = true  // Fail the build if lint errors are found
+    }
 }
 
 dependencies {
+    lintPublish(project(":Lint")) // Publish lint rules to be used by other modules
+
     implementation(project(":Annotations")) // The library needs to know about the annotation to be used on its data classes
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
