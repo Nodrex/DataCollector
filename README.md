@@ -15,6 +15,8 @@ It's a lightweight, reflection-based tool perfect for scenarios like waiting for
 
 ✅ (Optional) Compile-Time Validation: Includes a KSP processor to validate your data classes at build time, turning potential runtime errors into build errors.
 
+---
+
 🛠️ Setup
 Step 1: Add JitPack to your project
 In your root settings.gradle.kts file, add the JitPack repository:
@@ -41,6 +43,8 @@ dependencies {
     ksp("com.github.YourGitHubUsername:YourRepoName:Tag") // For the processor
 }
 ```
+
+---
 
 🚀 Usage
 Using the collector is a simple three-step process.
@@ -89,10 +93,15 @@ collector.emit(UserProfile::avatarUrl, "http://example.com/avatar.png")
 collector.emit(UserProfile::followerCount, 1024)
 Once all three properties have been emitted, the onResult callback will be triggered with the complete UserProfile object.
 ```
+
+---
+
 ⚠️ Important Note on Concurrency (Phase 1)
 This version of the collector is designed for sequential workflows where you expect one event per property for each collection cycle.
 
 If you emit multiple values for the same property concurrently before a full object is assembled, the internal SharedFlow will only use the latest value it received. This can lead to "mixed data" results. For advanced concurrent scenarios, a BatchingEventsCollector is planned for a future release.
+
+---
 
 🧹 Cleanup
 
@@ -100,7 +109,7 @@ Automatic Cleanup: After the collector has finished its work (e.g., after collec
 
 Manual Cleanup: If you need to stop the collection process early, you can manually call collector.cancel() at any time.
 
-
+---
 
 ✅ Lint Checks: Advanced Build-Time Safety
 This library includes a custom Lint module that provides advanced type checks for your emit calls, turning potential runtime errors into build errors.
@@ -117,6 +126,8 @@ val collector = EventsCollector.startSingleCollector<MyData> { /* ... */ }
 collector.emit(MyData::age, "25") // Expected Int, but got a String
 ```
 The build will fail with a clear error: Type mismatch. Property expects type Int but received String.
+
+---
 
 🚀More detailed Example
 ```Kotlin
@@ -209,7 +220,7 @@ suspend fun main() = coroutineScope {
 }
 ```
 
-
+---
 
 🗺️ Roadmap (Phase 2)
 Future versions of this library will include:
