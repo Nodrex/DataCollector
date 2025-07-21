@@ -39,7 +39,7 @@ android {
 
 dependencies {
     lintPublish(project(":Lint")) // Publish lint rules to be used by other modules
-    implementation(project(":Annotations")) // The library needs to know about the annotation to be used on its data classes
+    api(project(":Annotations")) // The library needs to know about the annotation to be used on its data classes
 
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.core)
