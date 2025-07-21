@@ -73,8 +73,7 @@ private fun testLib() {
 
     collector.emit(TaskData::age, "30")
     collector.emit(TaskData::status, 125)
-
-    collector.emit(TaskData::age, "asdas")
+    collector.emit(TaskData::age, "stringAge")
 
 }
 

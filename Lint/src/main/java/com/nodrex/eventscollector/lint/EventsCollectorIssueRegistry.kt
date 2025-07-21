@@ -5,7 +5,7 @@ import com.android.tools.lint.detector.api.Issue
 
 
 class EventsCollectorIssueRegistry : IssueRegistry() {
-    override val issues: List<Issue> = listOf(EmitTypeCheckDetector.ISSUE)
+    override val issues: List<Issue> = listOf(EmitTypeCheckDetector.ISSUE, AnnotationDetector.ISSUE)
 
     override val api: Int = com.android.tools.lint.detector.api.CURRENT_API
 }
