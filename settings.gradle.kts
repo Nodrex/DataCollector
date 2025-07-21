@@ -1,12 +1,5 @@
 pluginManagement {
     repositories {
-        /*google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }*/
         google()
         mavenCentral()
         gradlePluginPortal()
@@ -25,3 +18,4 @@ include(":DemoApp")
 include(":Annotations")
 include(":Processor")
 include(":EventsCollectorLib")
+include(":Lint")
