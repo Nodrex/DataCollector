@@ -95,9 +95,12 @@ This version of the collector is designed for sequential workflows where you exp
 If you emit multiple values for the same property concurrently before a full object is assembled, the internal SharedFlow will only use the latest value it received. This can lead to "mixed data" results. For advanced concurrent scenarios, a BatchingEventsCollector is planned for a future release.
 
 🧹 Cleanup
+
 Automatic Cleanup: After the collector has finished its work (e.g., after collectionCount is met), it will automatically cancel() itself to release all resources.
 
 Manual Cleanup: If you need to stop the collection process early, you can manually call collector.cancel() at any time.
+
+
 
 ✅ Lint Checks: Advanced Build-Time Safety
 This library includes a custom Lint module that provides advanced type checks for your emit calls, turning potential runtime errors into build errors.
@@ -205,6 +208,7 @@ suspend fun main() = coroutineScope {
     }
 }
 ```
+
 
 
 🗺️ Roadmap (Phase 2)
