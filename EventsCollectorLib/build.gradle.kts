@@ -39,15 +39,12 @@ android {
 
 dependencies {
     lintPublish(project(":Lint")) // Publish lint rules to be used by other modules
-
     implementation(project(":Annotations")) // The library needs to know about the annotation to be used on its data classes
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }

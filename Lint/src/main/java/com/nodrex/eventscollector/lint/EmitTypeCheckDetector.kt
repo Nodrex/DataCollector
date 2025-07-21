@@ -17,9 +17,12 @@ class EmitTypeCheckDetector : Detector(), SourceCodeScanner {
                 This check ensures type safety at build time.
             """,
             category = Category.CORRECTNESS,
-            priority = 6,
-            severity = Severity.ERROR,
-            implementation = Implementation(EmitTypeCheckDetector::class.java, Scope.JAVA_FILE_SCOPE)
+            priority = 10,
+            severity = Severity.FATAL,
+            implementation = Implementation(
+                EmitTypeCheckDetector::class.java,
+                Scope.JAVA_FILE_SCOPE
+            )
         )
     }
 
@@ -30,9 +33,9 @@ class EmitTypeCheckDetector : Detector(), SourceCodeScanner {
     override fun createUastHandler(context: JavaContext): UElementHandler {
         return object : UElementHandler() {
             override fun visitCallExpression(node: UCallExpression) {
-                if (node.methodName != "emit") return
+                if (node.methodName != LibInfo.EMIT_FUNCTION_NAME) return
                 val resolvedMethod = node.resolve() ?: return
-                if (resolvedMethod.containingClass?.qualifiedName != "com.nodrex.eventscollector.EventsCollector") return
+                if (resolvedMethod.containingClass?.qualifiedName != LibInfo.EVENTS_COLLECTOR_CLASS_PATH) return
                 if (node.valueArgumentCount != 2) return
 
                 val propertyArgumentType = node.valueArguments[0].getExpressionType() ?: return
