@@ -1,19 +1,20 @@
-EventsCollector
-Tired of messy boilerplate when waiting for multiple asynchronous events to complete? EventsCollector simplifies this by collecting a set of values and assembling them into a single, type-safe Kotlin data class object.
+# EventsCollector
 
-It's a lightweight, reflection-based tool perfect for scenarios like waiting for multiple network and database responses before updating a UI.
+EventsCollector simplifies the orchestration of multiple asynchronous data sources by collecting their values and assembling them into a single, type-safe Kotlin data class object.
+
+It's a lightweight, reflection-based tool perfect for scenarios where you need to wait for responses from multiple asynchronous sources—such as network calls, database queries, or file reads—before taking a final action.
 
 ✨ Features
 
 ✅ Type-Safe by Design: Uses Kotlin reflection and generics to provide a fully type-safe result object.
 
-✅ Simple & Unambiguous API: Create a collector and emit events with clear, compile-time checked property references (UserData::name).
+✅ Simple & Unambiguous API: Create a collector and emit events with clear, lint-checked property references.
 
 ✅ Flexible Collection: Configure for a single, one-time collection or a continuous stream of event sets.
 
 ✅ Lifecycle Aware: Manages its own CoroutineScope and is easily cancelled to prevent resource leaks.
 
-✅ (Optional) Compile-Time Validation: Includes a KSP processor to validate your data classes at build time, turning potential runtime errors into build errors.
+✅ Compile-Time Validation: Includes a KSP processor to validate your data classes at build time, turning potential runtime errors into build errors.
 
 ---
 
