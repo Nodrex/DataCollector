@@ -38,9 +38,6 @@ In your app's build.gradle.kts file, add the dependencies for the library. Repla
 dependencies {
     // The main collector library
     implementation("com.github.YourGitHubUsername:YourRepoName:Tag")
-
-    // (Optional but Recommended) For compile-time checks
-    implementation("com.github.YourGitHubUsername:YourRepoName:Tag") // For the annotation
     ksp("com.github.YourGitHubUsername:YourRepoName:Tag") // For the processor
 }
 ```
@@ -92,7 +89,7 @@ collector.emit(UserProfile::avatarUrl, "http://example.com/avatar.png")
 ```Kotlin
 // From another coroutine fetching stats
 collector.emit(UserProfile::followerCount, 1024)
-Once all three properties have been emitted, the onResult callback will be triggered with the complete UserProfile object.
+// Once all three properties have been emitted, the onResult callback will be triggered with the complete UserProfile object.
 ```
 
 ---
@@ -226,9 +223,20 @@ suspend fun main() = coroutineScope {
 🗺️ Roadmap (Phase 2)
 Future versions of this library will include:
 
-A BatchingEventsCollector for robust concurrent data collection.
+A GroupedEventsCollector for robust concurrent data collection.
 
 Support for regular classes and full Java interoperability.
 
-Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope).
+Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope, lifeCycleScope and so on).
 
+Kotlin-multiplatform support
+
+---
+## 📜 License
+
+This project is licensed under the [MIT License](https://opensource.org/license/MIT). Feel free to use, modify, and distribute the library under the terms of the license.
+
+---
+## 👥 Contributions
+
+Contributions are welcome! If you want to improve this library, please feel free to submit a pull request or open an issue.
