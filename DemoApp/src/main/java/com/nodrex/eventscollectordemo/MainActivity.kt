@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.nodrex.eventscollector.EventsCollector
 import com.nodrex.eventscollector.annotations.CollectableEventsData
 import com.nodrex.eventscollectordemo.ui.theme.EventsCollectorTheme
@@ -25,8 +23,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             EventsCollectorTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    Text(
+                        text = "Hello Android!",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -78,20 +76,4 @@ private fun testLib() {
     collector.emit(TaskData::age, "stringAge")
     */
 
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    EventsCollectorTheme {
-        Greeting("Android")
-    }
 }
