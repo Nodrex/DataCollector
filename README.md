@@ -37,8 +37,8 @@ In your app's build.gradle.kts file, add the dependencies for the library. Repla
 ```Kotlin
 dependencies {
     // The main collector library
-    implementation("com.github.YourGitHubUsername:YourRepoName:Tag")
-    ksp("com.github.YourGitHubUsername:YourRepoName:Tag") // For the processor
+    implementation("com.github.Nodrex.EventsCollector:EventsCollectorLib:1.0.0")
+    ksp("com.github.Nodrex.EventsCollector:Processor:1.0.0") // For the processor
 }
 ```
 
