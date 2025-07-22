@@ -37,20 +37,31 @@ Step 2: Add the Library Dependencies
 In your app's build.gradle.kts file, add the dependencies for the library. Replace Tag with the latest release tag from your GitHub repository (e.g., v1.0.0).
 
 ```Kotlin
-plugins {
-    // ... your other plugins
-    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
-}
-
 dependencies {
     // The main collector library
     implementation("com.github.Nodrex.EventsCollector:EventsCollectorLib:1.0.0")
-    ksp("com.github.Nodrex.EventsCollector:Processor:1.0.0") // For the processor
 
     // Required peer dependencies for the collector
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
+}
+```
+⚙️ Optional: Build-Time Validation (Recommended)
+
+To enable build-time checks that ensure you are using the collector correctly, you must apply the KSP plugin and add the processor dependency.
+
+If you choose not to add these, the library will still function, but the build-time validation for your data classes will be disabled.
+
+```Kotlin
+plugins {
+    // ... your other plugins
+    id("org.jetbrains.kotlin.android") version "2.0.0"
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
+}
+
+dependencies {
+    ksp("com.github.Nodrex.EventsCollector:Processor:1.0.0") // For data class build-time validation
 }
 ```
 
@@ -132,7 +143,7 @@ data class MyData(val name: String, val age: Int)
 
 val collector = EventsCollector.startSingleCollector<MyData> { /* ... */ }
 
-// ❌ BUILD ERROR: The lint check will flag this line.
+// ❌ Lint BUILD ERROR: The lint check will flag this line.
 collector.emit(MyData::age, "25") // Expected Int, but got a String
 ```
 The build will fail with a clear error: Type mismatch. Property expects type Int but received String.
