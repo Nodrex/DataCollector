@@ -48,3 +48,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
 }
+
+apply(from = "$rootDir/publish.gradle.kts")

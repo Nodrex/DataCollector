@@ -18,3 +18,5 @@ dependencies {
     // It needs the KSP API to analyze code
     implementation(libs.ksp.api)
 }
+
+apply(from = "$rootDir/publish.gradle.kts")
