@@ -232,6 +232,8 @@ Support for regular classes and full Java interoperability.
 
 Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope, lifeCycleScope and so on).
 
+Kotlin-multiplatform support
+
 ---
 ## 📜 License
 
