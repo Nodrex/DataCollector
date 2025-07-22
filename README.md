@@ -1,4 +1,6 @@
-# EventsCollector
+# EventsCollector  
+
+[![](https://jitpack.io/v/Nodrex/EventsCollector.svg)](https://jitpack.io/#Nodrex/EventsCollector)
 
 EventsCollector simplifies the orchestration of multiple asynchronous data sources by collecting their values and assembling them into a single, type-safe Kotlin data class object.
 
@@ -35,10 +37,20 @@ Step 2: Add the Library Dependencies
 In your app's build.gradle.kts file, add the dependencies for the library. Replace Tag with the latest release tag from your GitHub repository (e.g., v1.0.0).
 
 ```Kotlin
+plugins {
+    // ... your other plugins
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
+}
+
 dependencies {
     // The main collector library
     implementation("com.github.Nodrex.EventsCollector:EventsCollectorLib:1.0.0")
     ksp("com.github.Nodrex.EventsCollector:Processor:1.0.0") // For the processor
+
+    // Required peer dependencies for the collector
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
 }
 ```
 
@@ -240,3 +252,11 @@ This project is licensed under the [MIT License](https://opensource.org/license/
 ## 👥 Contributions
 
 Contributions are welcome! If you want to improve this library, please feel free to submit a pull request or open an issue.
+
+---
+
+## 📣 Demo Application
+
+This repository includes a DemoApp module that contains a working example of how to use the EventsCollector library.
+
+You can find a complete code sample in the [`MainActivity.kt`](https://github.com/Nodrex/EventsCollector/blob/master/DemoApp/src/main/java/com/nodrex/eventscollectordemo/MainActivity.kt) file to see it in action.
