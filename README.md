@@ -1,6 +1,6 @@
 # EventsCollector  
 
-[![](https://jitpack.io/v/Nodrex/EventsCollector.svg)](https://jitpack.io/#Nodrex/EventsCollector)     [![Documentation](https://img.shields.io/badge/Documentation-View-blue)](https://nodrex.github.io/EventsCollector/)
+[![](https://jitpack.io/v/Nodrex/EventsCollector.svg)](https://jitpack.io/#Nodrex/EventsCollector)
 
 EventsCollector simplifies the orchestration of multiple asynchronous data sources by collecting their values and assembling them into a single, type-safe Kotlin data class object.
 
