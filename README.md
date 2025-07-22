@@ -92,7 +92,7 @@ collector.emit(UserProfile::avatarUrl, "http://example.com/avatar.png")
 ```Kotlin
 // From another coroutine fetching stats
 collector.emit(UserProfile::followerCount, 1024)
-Once all three properties have been emitted, the onResult callback will be triggered with the complete UserProfile object.
+// Once all three properties have been emitted, the onResult callback will be triggered with the complete UserProfile object.
 ```
 
 ---
