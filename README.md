@@ -38,9 +38,6 @@ In your app's build.gradle.kts file, add the dependencies for the library. Repla
 dependencies {
     // The main collector library
     implementation("com.github.YourGitHubUsername:YourRepoName:Tag")
-
-    // (Optional but Recommended) For compile-time checks
-    implementation("com.github.YourGitHubUsername:YourRepoName:Tag") // For the annotation
     ksp("com.github.YourGitHubUsername:YourRepoName:Tag") // For the processor
 }
 ```
