@@ -4,6 +4,7 @@ ksp = "2.0.0-1.0.21"
 kotlin = "2.0.0"
 coroutines = "1.8.1"
 lint = "31.10.1"
+dokka = "1.9.10"
 
 lifecycleRuntimeKtx = "2.9.2"
 coreKtx = "1.16.0"
@@ -49,6 +50,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }

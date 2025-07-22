@@ -1,7 +1,6 @@
 package com.nodrex.eventscollectordemo
 
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,9 +17,6 @@ import com.nodrex.eventscollector.annotations.CollectableEventsData
 import com.nodrex.eventscollectordemo.ui.theme.EventsCollectorTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-
-@CollectableEventsData
-data class TaskData(val taskName: String, val status: String, val age: Int)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +38,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+@CollectableEventsData
+data class TaskData(val taskName: String, val status: String, val age: Int)
 
 private fun testLib() {
     val collector = EventsCollector.startSingleCollector<TaskData>(
@@ -71,9 +70,13 @@ private fun testLib() {
     }
     collector.emit(TaskData::age, 30)
 
+
+    //To test type checking with lint
+    /*
     collector.emit(TaskData::age, "30")
     collector.emit(TaskData::status, 125)
     collector.emit(TaskData::age, "stringAge")
+    */
 
 }
 

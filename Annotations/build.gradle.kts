@@ -11,3 +11,5 @@ kotlin {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
+
+apply(from = "$rootDir/publish.gradle.kts")
