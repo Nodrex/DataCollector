@@ -226,9 +226,18 @@ suspend fun main() = coroutineScope {
 🗺️ Roadmap (Phase 2)
 Future versions of this library will include:
 
-A BatchingEventsCollector for robust concurrent data collection.
+A GroupedEventsCollector for robust concurrent data collection.
 
 Support for regular classes and full Java interoperability.
 
-Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope).
+Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope, lifeCycleScope and so on).
 
+---
+## 📜 License
+
+This project is licensed under the [MIT License](https://opensource.org/license/MIT). Feel free to use, modify, and distribute the library under the terms of the license.
+
+---
+## 👥 Contributions
+
+Contributions are welcome! If you want to improve this library, please feel free to submit a pull request or open an issue.
