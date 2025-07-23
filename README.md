@@ -118,7 +118,7 @@ Once all three properties have been emitted, the onResult callback will be trigg
 ---
 
 ⚠️ Important Note on Concurrency (Phase 1)
-This version of the collector is designed for sequential workflows where you expect one dat per property for each collection cycle.
+This version of the collector is designed for sequential workflows where you expect one data per property for each collection cycle.
 
 If you emit multiple values for the same property concurrently before a full object is assembled, the internal SharedFlow will only use the latest value it received. This can lead to "mixed data" results. For advanced concurrent scenarios, a GroupedDataCollector is planned for a future release.
 
