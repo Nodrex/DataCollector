@@ -167,7 +167,7 @@ The build will fail with a clear error: Type mismatch. Property expects type Int
 
 ---
 
-## 🚀Detailed Example
+## 🚀 Detailed Example
 ```Kotlin
 import com.nodrex.datacollector.DataCollector
 import com.nodrex.datacollector.annotations.CollectableData
