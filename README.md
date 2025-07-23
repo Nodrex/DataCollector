@@ -272,4 +272,4 @@ Contributions are welcome! If you want to improve this library, please feel free
 
 This repository includes a DemoApp module that contains a working example of how to use the DataCollector library.
 
-You can find a complete code sample in the [`MainActivity.kt`](https://github.com/Nodrex/DataCollector/blob/master/DemoApp/src/main/java/com/nodrex/Datacollectordemo/MainActivity.kt) file to see it in action.
+You can find a complete code sample in the [`MainActivity.kt`](https://github.com/Nodrex/DataCollector/blob/master/DemoApp/src/main/java/com/nodrex/datacollectordemo/MainActivity.kt) file to see it in action.
