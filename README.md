@@ -39,7 +39,7 @@ In your app's build.gradle.kts file, add the dependencies for the library.
 ```Kotlin
 dependencies {
     // The main collector library
-    implementation("com.github.Nodrex.EventsCollector:EventsCollectorLib:1.0.0")
+    implementation("com.github.Nodrex.DataCollector:DataCollectorLib:2.0.0")
 
     // Required peer dependencies for the collector
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
@@ -61,7 +61,7 @@ plugins {
 }
 
 dependencies {
-    ksp("com.github.Nodrex.EventsCollector:Processor:1.0.0") // For data class build-time validation
+    ksp("com.github.Nodrex.DataCollector:Compiler:2.0.0") // For data class build-time validation
 }
 ```
 
