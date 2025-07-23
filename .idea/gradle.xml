@@ -11,8 +11,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/Annotations" />
+            <option value="$PROJECT_DIR$/DataCollectorLib" />
             <option value="$PROJECT_DIR$/DemoApp" />
-            <option value="$PROJECT_DIR$/EventsCollectorLib" />
             <option value="$PROJECT_DIR$/Lint" />
             <option value="$PROJECT_DIR$/Processor" />
           </set>

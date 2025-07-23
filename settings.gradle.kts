@@ -17,5 +17,5 @@ rootProject.name = "EventsCollector"
 include(":DemoApp")
 include(":Annotations")
 include(":Processor")
-include(":EventsCollectorLib")
+include(":DataCollectorLib")
 include(":Lint")

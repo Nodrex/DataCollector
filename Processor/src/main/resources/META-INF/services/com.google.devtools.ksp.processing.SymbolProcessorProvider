@@ -1,1 +1,1 @@
-com.nodrex.eventscollector.processor.CollectableEventsDataProcessorProvider
+com.nodrex.datacollector.processor.CollectableDataProcessorProvider

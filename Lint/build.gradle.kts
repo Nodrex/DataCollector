@@ -24,6 +24,6 @@ dependencies {
 // Create lint JAR with proper manifest
 tasks.named<Jar>("jar") {
     manifest {
-        attributes["Lint-Registry-v2"] = "com.nodrex.eventscollector.lint.EventsCollectorIssueRegistry"
+        attributes["Lint-Registry-v2"] = "com.nodrex.datacollector.lint.DataCollectorIssueRegistry"
     }
 }
