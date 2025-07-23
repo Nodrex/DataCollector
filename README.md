@@ -1,6 +1,6 @@
 # DataCollector  
 
-[![](https://jitpack.io/v/Nodrex/DataCollector.svg)](https://jitpack.io/#Nodrex/DataCollector)
+[![](https://jitpack.io/v/Nodrex/DataCollector.svg)](https://jitpack.io/#Nodrex/DataCollector)      [![Documentation](https://img.shields.io/badge/Documentation-View-blue)](https://nodrex.github.io/DataCollector/)
 
 DataCollector simplifies the orchestration of multiple asynchronous data sources by collecting their values and assembling them into a single, type-safe Kotlin data class object.
 
@@ -17,6 +17,22 @@ It's a lightweight, reflection-based tool perfect for scenarios where you need t
 ✅ Lifecycle Aware: Manages its own CoroutineScope and is easily cancelled to prevent resource leaks.
 
 ✅ Compile-Time Validation: Includes a KSP processor to validate your data classes at build time, turning potential runtime errors into build errors.
+
+---
+
+## 📑 Table of Contents
+
+- [Setup](#️-setup)
+- [Optional: Build-Time Validation](#️-optional-build-time-validation-recommended)
+- [Usage](#-usage)
+- [Important Note on Concurrency](#️-important-note-on-concurrency-phase-1)
+- [Cleanup](#-cleanup)
+- [Lint Checks](#-lint-checks-advanced-build-time-safety)
+- [More detailed Example](#more-detailed-example)
+- [Roadmap](#️-roadmap-phase-2)
+- [License](#-license)
+- [Contributions](#-contributions)
+- [Demo Application](#-demo-application)
 
 ---
 
