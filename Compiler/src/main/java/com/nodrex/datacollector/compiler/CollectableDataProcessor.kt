@@ -1,4 +1,4 @@
-package com.nodrex.datacollector.processor
+package com.nodrex.datacollector.compiler
 
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.*

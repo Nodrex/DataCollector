@@ -3,6 +3,8 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
       <module name="EventsCollector.EventsCollectorLib" target="21" />
+      <module name="EventsCollector.Processor.main" target="11" />
+      <module name="EventsCollector.Processor.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

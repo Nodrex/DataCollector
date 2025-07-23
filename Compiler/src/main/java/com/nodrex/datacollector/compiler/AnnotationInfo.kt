@@ -1,4 +1,4 @@
-package com.nodrex.datacollector.processor
+package com.nodrex.datacollector.compiler
 
 object AnnotationInfo {
 

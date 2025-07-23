@@ -48,7 +48,7 @@ android {
 dependencies {
     implementation(project(":DataCollectorLib"))
     implementation(project(":Annotations"))
-    ksp(project(":Processor"))
+    "ksp"(project(":Compiler"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

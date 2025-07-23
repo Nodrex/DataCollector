@@ -1,6 +1,5 @@
 package com.nodrex.datacollectordemo
 
-
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
