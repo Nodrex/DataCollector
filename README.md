@@ -24,11 +24,11 @@ It's a lightweight, reflection-based tool perfect for scenarios where you need t
 
 - [Setup](#️-setup)
 - [Optional: Build-Time Validation](#️-optional-build-time-validation-recommended)
-- [Usage](#-usage)
+- [Basic Usage](#-basic-usage)
 - [Important Note on Concurrency](#️-important-note-on-concurrency-phase-1)
 - [Cleanup](#-cleanup)
 - [Lint Checks](#-lint-checks-advanced-build-time-safety)
-- [More detailed Example](#more-detailed-example)
+- [Detailed Example](#-detailed-example)
 - [Roadmap](#️-roadmap-phase-2)
 - [License](#-license)
 - [Contributions](#-contributions)
@@ -83,7 +83,7 @@ dependencies {
 
 ---
 
-## 🚀 Usage
+## 🚀 Basic Usage
 Using the collector is a simple three-step process.
 
 Step 1: Define Your Data Model
@@ -167,7 +167,7 @@ The build will fail with a clear error: Type mismatch. Property expects type Int
 
 ---
 
-## 🚀More detailed Example
+## 🚀Detailed Example
 ```Kotlin
 import com.nodrex.datacollector.DataCollector
 import com.nodrex.datacollector.annotations.CollectableData
