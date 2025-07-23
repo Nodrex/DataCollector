@@ -13,7 +13,7 @@
         android:theme="@style/Theme.EventsCollector"
         tools:targetApi="31">
         <activity
-            android:name="com.nodrex.eventscollectordemo.MainActivity"
+            android:name="com.nodrex.datacollectordemo.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.EventsCollector">

@@ -1,1 +1,1 @@
-sourceset_dependencies='{":EventsCollectorLib:dokkaHtml/debug":[],":EventsCollectorLib:dokkaHtml/main":[],":EventsCollectorLib:dokkaHtml/release":[]}'
+sourceset_dependencies='{":DataCollectorLib:dokkaHtml/debug":[],":DataCollectorLib:dokkaHtml/main":[],":DataCollectorLib:dokkaHtml/release":[]}'

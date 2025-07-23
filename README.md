@@ -1,8 +1,8 @@
-# EventsCollector  
+# DataCollector  
 
-[![](https://jitpack.io/v/Nodrex/EventsCollector.svg)](https://jitpack.io/#Nodrex/EventsCollector)
+[![](https://jitpack.io/v/Nodrex/DataCollector.svg)](https://jitpack.io/#Nodrex/DataCollector)
 
-EventsCollector simplifies the orchestration of multiple asynchronous data sources by collecting their values and assembling them into a single, type-safe Kotlin data class object.
+DataCollector simplifies the orchestration of multiple asynchronous data sources by collecting their values and assembling them into a single, type-safe Kotlin data class object.
 
 It's a lightweight, reflection-based tool perfect for scenarios where you need to wait for responses from multiple asynchronous sources—such as network calls, database queries, or file reads—before taking a final action.
 
@@ -10,9 +10,9 @@ It's a lightweight, reflection-based tool perfect for scenarios where you need t
 
 ✅ Type-Safe by Design: Uses Kotlin reflection and generics to provide a fully type-safe result object.
 
-✅ Simple & Unambiguous API: Create a collector and emit events with clear, lint-checked property references.
+✅ Simple & Unambiguous API: Create a collector and emit Data with clear, lint-checked property references.
 
-✅ Flexible Collection: Configure for a single, one-time collection or a continuous stream of event sets.
+✅ Flexible Collection: Configure for a single, one-time collection or a continuous stream of data sets.
 
 ✅ Lifecycle Aware: Manages its own CoroutineScope and is easily cancelled to prevent resource leaks.
 
@@ -34,7 +34,7 @@ dependencyResolutionManagement {
 }
 ```
 Step 2: Add the Library Dependencies
-In your app's build.gradle.kts file, add the dependencies for the library. Replace Tag with the latest release tag from your GitHub repository (e.g., v1.0.0).
+In your app's build.gradle.kts file, add the dependencies for the library.
 
 ```Kotlin
 dependencies {
@@ -71,12 +71,12 @@ dependencies {
 Using the collector is a simple three-step process.
 
 Step 1: Define Your Data Model
-Create a Kotlin data class that represents the final object you want to receive. For compile-time safety, mark it with the @CollectableEventsData annotation.
+Create a Kotlin data class that represents the final object you want to receive. For compile-time safety, mark it with the @CollectableData annotation.
 
 ```Kotlin
-import com.nodrex.eventscollector.annotations.CollectableEventsData
+import com.nodrex.datacollector.annotations.CollectableData
 
-@CollectableEventsData
+@CollectableData
 data class UserProfile(
     val name: String,
     val followerCount: Int,
@@ -84,24 +84,24 @@ data class UserProfile(
 )
 ```
 Step 2: Create the Collector
-Use one of the factory functions to create and start a collector. For collecting just one object, startSingleCollector is the most convenient.
+Use one of the factory functions to create and start a collector. For collecting just one object, collectSingle is the most convenient.
 
 ```Kotlin
 // In an Activity, ViewModel, or any CoroutineScope
-val collector = EventsCollector.startSingleCollector<UserProfile>(
+val collector = DataCollector.collectSingle<UserProfile>(
     onResult = { result, error ->
         if (result != null) {
             // Success! You have a fully populated, type-safe object.
-            println("Profile received: ${result.name} has ${result.followerCount} followers.")
+            Log.d("TAG" ,"Profile received: ${result.name} has ${result.followerCount} followers.")
         } else {
             // An error occurred during collection.
-            println("Failed to get profile: ${error?.message}")
+            Log.d("TAG" ,"Failed to get profile: ${error?.message}")
         }
     }
 )
 ```
 
-Step 3: Emit Events
+Step 3: Emit Data
 As your asynchronous data arrives, use the emit() function with a property reference to provide the values. The order does not matter.
 
 ```Kotlin
@@ -112,21 +112,21 @@ collector.emit(UserProfile::avatarUrl, "http://example.com/avatar.png")
 ```Kotlin
 // From another coroutine fetching stats
 collector.emit(UserProfile::followerCount, 1024)
-// Once all three properties have been emitted, the onResult callback will be triggered with the complete UserProfile object.
 ```
+Once all three properties have been emitted, the onResult callback will be triggered with the complete UserProfile object.
 
 ---
 
 ⚠️ Important Note on Concurrency (Phase 1)
-This version of the collector is designed for sequential workflows where you expect one event per property for each collection cycle.
+This version of the collector is designed for sequential workflows where you expect one data per property for each collection cycle.
 
-If you emit multiple values for the same property concurrently before a full object is assembled, the internal SharedFlow will only use the latest value it received. This can lead to "mixed data" results. For advanced concurrent scenarios, a BatchingEventsCollector is planned for a future release.
+If you emit multiple values for the same property concurrently before a full object is assembled, the internal SharedFlow will only use the latest value it received. This can lead to "mixed data" results. For advanced concurrent scenarios, a GroupedDataCollector is planned for a future release.
 
 ---
 
 🧹 Cleanup
 
-Automatic Cleanup: After the collector has finished its work (e.g., after collectionCount is met), it will automatically cancel() itself to release all resources.
+Automatic Cleanup: After the collector has finished its work (e.g., after collectorCount is met), it will automatically cancel() itself to release all resources.
 
 Manual Cleanup: If you need to stop the collection process early, you can manually call collector.cancel() at any time.
 
@@ -141,9 +141,9 @@ Example of code that will now fail the build:
 ```Kotlin
 data class MyData(val name: String, val age: Int)
 
-val collector = EventsCollector.startSingleCollector<MyData> { /* ... */ }
+val collector = DataCollector.collectSingle<MyData> { /* ... */ }
 
-// ❌ Lint BUILD ERROR: The lint check will flag this line.
+// ❌ BUILD ERROR: The lint check will flag this line.
 collector.emit(MyData::age, "25") // Expected Int, but got a String
 ```
 The build will fail with a clear error: Type mismatch. Property expects type Int but received String.
@@ -152,8 +152,8 @@ The build will fail with a clear error: Type mismatch. Property expects type Int
 
 🚀More detailed Example
 ```Kotlin
-import com.nodrex.eventscollector.EventsCollector
-import com.nodrex.eventscollector.annotations.CollectableEventsData
+import com.nodrex.datacollector.DataCollector
+import com.nodrex.datacollector.annotations.CollectableData
 import kotlinx.coroutines.*
 
 // --- 1. Define Your Data Models ---
@@ -171,8 +171,8 @@ data class UserAccount(val id: String, val email: String)
 data class UserData(val fullName: String, val followerCount: Int)
 
 // The final, assembled object that the collector will provide
-@CollectableEventsData
-data class MyEvents(
+@CollectableData
+data class MyData(
     val settings: UserSettings,
     val account: UserAccount,
     val data: UserData,
@@ -197,7 +197,7 @@ suspend fun fetchSettingsFromDb(): UserSettings {
 suspend fun fetchUserDataFromNetwork(): UserData {
     delay(800)
     println("✅ UserData fetched from Network")
-    return UserData("Nodrex", 999)
+    return UserData("Nodrex", 1024)
 }
 
 // Simulates loading an image from a file (medium speed)
@@ -208,35 +208,35 @@ suspend fun loadImageFromFile(): Bitmap {
 }
 
 
-// --- 3. Use the Collector to Wait for All Events ---
+// --- 3. Use the Collector to Wait for All Data ---
 
 suspend fun main() = coroutineScope {
-    println("🚀 Starting to collect all user events...")
+    println("🚀 Starting to collect all user Data...")
 
-    val collector = EventsCollector.startSingleCollector<MyEvents>(
+    val collector = DataCollector.collectSingle<MyData>(
         onResult = { result, error ->
             if (result != null) {
                 // This block is only called when ALL data is ready
-                println("\n🎉 All events collected! Assembled object:")
+                println("\n🎉 All Data collected! Assembled object:")
                 println(result)
             } else {
-                println("Failed to collect events: ${error?.message}")
+                println("Failed to collect Data: ${error?.message}")
             }
         }
     )
 
     // Launch concurrent jobs to fetch all data sources
     launch {
-        collector.emit(MyEvents::account, fetchAccountFromDb())
+        collector.emit(MyData::account, fetchAccountFromDb())
     }
     launch {
-        collector.emit(MyEvents::settings, fetchSettingsFromDb())
+        collector.emit(MyData::settings, fetchSettingsFromDb())
     }
     launch {
-        collector.emit(MyEvents::data, fetchUserDataFromNetwork())
+        collector.emit(MyData::data, fetchUserDataFromNetwork())
     }
     launch {
-        collector.emit(MyEvents::image, loadImageFromFile())
+        collector.emit(MyData::image, loadImageFromFile())
     }
 }
 ```
@@ -244,15 +244,17 @@ suspend fun main() = coroutineScope {
 ---
 
 🗺️ Roadmap (Phase 2)
+Kotlin-multiplatform support
+
 Future versions of this library will include:
 
-A GroupedEventsCollector for robust concurrent data collection.
+A GroupedDataCollector for robust concurrent data collection.
 
 Support for regular classes and full Java interoperability.
 
 Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope, lifeCycleScope and so on).
 
-Kotlin-multiplatform support
+Optional timeout parameter to prevent the collector from waiting forever if one of the expected events never arrives.
 
 ---
 ## 📜 License
@@ -268,6 +270,6 @@ Contributions are welcome! If you want to improve this library, please feel free
 
 ## 📣 Demo Application
 
-This repository includes a DemoApp module that contains a working example of how to use the EventsCollector library.
+This repository includes a DemoApp module that contains a working example of how to use the DataCollector library.
 
-You can find a complete code sample in the [`MainActivity.kt`](https://github.com/Nodrex/EventsCollector/blob/master/DemoApp/src/main/java/com/nodrex/eventscollectordemo/MainActivity.kt) file to see it in action.
+You can find a complete code sample in the [`MainActivity.kt`](https://github.com/Nodrex/DataCollector/blob/master/DemoApp/src/main/java/com/nodrex/Datacollectordemo/MainActivity.kt) file to see it in action.

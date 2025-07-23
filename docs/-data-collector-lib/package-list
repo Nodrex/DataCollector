@@ -1,0 +1,16 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.nodrex.datacollector////PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/index.html
+$dokka.location:com.nodrex.datacollector//EVENTS_COLLECTOR_TAG/#/PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-e-v-e-n-t-s_-c-o-l-l-e-c-t-o-r_-t-a-g.html
+$dokka.location:com.nodrex.datacollector/DataCollector.Companion///PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-data-collector/-companion/index.html
+$dokka.location:com.nodrex.datacollector/DataCollector.Companion/collect/#kotlin.Function2[TypeParam(bounds=[kotlin.Any])?,kotlin.Throwable?,kotlin.Unit]#kotlin.Int?#kotlinx.coroutines.CoroutineDispatcher/PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-data-collector/-companion/collect.html
+$dokka.location:com.nodrex.datacollector/DataCollector.Companion/collectSingle/#kotlin.Function2[TypeParam(bounds=[kotlin.Any])?,kotlin.Throwable?,kotlin.Unit]#kotlinx.coroutines.CoroutineDispatcher/PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-data-collector/-companion/collect-single.html
+$dokka.location:com.nodrex.datacollector/DataCollector///PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-data-collector/index.html
+$dokka.location:com.nodrex.datacollector/DataCollector/cancel/#/PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-data-collector/cancel.html
+$dokka.location:com.nodrex.datacollector/DataCollector/emit/#kotlin.reflect.KProperty1[TypeParam(bounds=[kotlin.Any]),TypeParam(bounds=[kotlin.Any?])]#TypeParam(bounds=[kotlin.Any?])/PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-data-collector/emit.html
+$dokka.location:com.nodrex.datacollector/Util///PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-util/index.html
+$dokka.location:com.nodrex.datacollector/Util/log/#kotlin.String/PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-util/log.html
+$dokka.location:com.nodrex.datacollector/Util/loge/#kotlin.String/PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-util/loge.html
+$dokka.location:com.nodrex.datacollector/Util/logw/#kotlin.String/PointingToDeclaration/-data-collector-lib/com.nodrex.datacollector/-util/logw.html
+com.nodrex.datacollector
+

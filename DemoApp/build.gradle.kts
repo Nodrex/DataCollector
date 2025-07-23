@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.nodrex.eventscollector"
+    namespace = "com.nodrex.datacollector.demoapp"
     compileSdk = 35
 
     defaultConfig {
@@ -46,9 +46,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":EventsCollectorLib"))
+    implementation(project(":DataCollectorLib"))
     implementation(project(":Annotations"))
-    ksp(project(":Processor"))
+    "ksp"(project(":Compiler"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

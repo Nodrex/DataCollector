@@ -1,4 +1,3 @@
 Manifest-Version: 1.0
-Lint-Registry-v2: com.nodrex.eventscollector.lint.EventsCollectorIssueRe
- gistry
+Lint-Registry-v2: com.nodrex.datacollector.lint.DataCollectorIssueRegistry
 
