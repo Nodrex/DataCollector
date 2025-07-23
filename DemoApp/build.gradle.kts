@@ -46,9 +46,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":DataCollectorLib"))
-    implementation(project(":Annotations"))
-    "ksp"(project(":Compiler"))
+
+    /*implementation(project(":DataCollectorLib"))
+    "ksp"(project(":Compiler"))*/
+
+    // To test release builds
+    implementation("com.github.Nodrex.DataCollector:DataCollectorLib:2.0.0")
+    ksp("com.github.Nodrex.DataCollector:Compiler:2.0.0") // For data class build-time validation
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

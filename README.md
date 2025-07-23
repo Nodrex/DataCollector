@@ -65,7 +65,7 @@ dependencies {
 ```
 ## ⚙️ Optional: Build-Time Validation (Recommended)
 
-To enable build-time checks that ensure you are using the collector correctly, you must apply the KSP plugin and add the processor dependency.
+To enable build-time checks that ensure you are using the collector correctly, you must apply the KSP plugin and add the compiler dependency.
 
 If you choose not to add these, the library will still function, but the build-time validation for your data classes will be disabled.
 
@@ -90,28 +90,27 @@ Step 1: Define Your Data Model
 Create a Kotlin data class that represents the final object you want to receive. For compile-time safety, mark it with the @CollectableData annotation.
 
 ```Kotlin
-import com.nodrex.datacollector.annotations.CollectableData
-
 @CollectableData
-data class UserProfile(
-    val name: String,
-    val followerCount: Int,
-    val avatarUrl: String
+data class MyData(
+    val settings: UserSettings,
+    val account: UserAccount,
+    val userData: UserData,
+    val image: Bitmap
 )
 ```
 Step 2: Create the Collector
 Use one of the factory functions to create and start a collector. For collecting just one object, collectSingle is the most convenient.
 
 ```Kotlin
-// In an Activity, ViewModel, or any CoroutineScope
-val collector = DataCollector.collectSingle<UserProfile>(
+// In an Activity, ViewModel, or any CoroutineScope and so on...
+val collector = DataCollector.collectSingle<MyData>(
     onResult = { result, error ->
         if (result != null) {
             // Success! You have a fully populated, type-safe object.
-            Log.d("TAG" ,"Profile received: ${result.name} has ${result.followerCount} followers.")
+            Log.d("TAG" ,"Data received: $result")
         } else {
             // An error occurred during collection.
-            Log.d("TAG" ,"Failed to get profile: ${error?.message}")
+            Log.d("TAG" ,"Failed to get data: ${error?.message}")
         }
     }
 )
@@ -121,15 +120,19 @@ Step 3: Emit Data
 As your asynchronous data arrives, use the emit() function with a property reference to provide the values. The order does not matter.
 
 ```Kotlin
-// From a coroutine fetching user data
-collector.emit(UserProfile::name, "Nodrex")
-collector.emit(UserProfile::avatarUrl, "http://example.com/avatar.png")
+// Fetching data from local DB and emit
+collector.emit(MyData::account, UserAccount("user-123", "test@example.com"))
+collector.emit(MyData::settings, UserSettings("Dark Mode"))
 ```
 ```Kotlin
-// From another coroutine fetching stats
-collector.emit(UserProfile::followerCount, 1024)
+// Fetching data from network end emit
+collector.emit(MyData::userData, UserData("Nodrex", 1024))
 ```
-Once all three properties have been emitted, the onResult callback will be triggered with the complete UserProfile object.
+```Kotlin
+// Fetching data from file and emit
+collector.emit(MyData::image, Bitmap("file//storage//local_storage"))
+```
+Once all 4 properties have been emitted, the onResult callback will be triggered with the complete data set object.
 
 ---
 
@@ -137,7 +140,7 @@ Once all three properties have been emitted, the onResult callback will be trigg
 
 This version of the collector is designed for sequential workflows where you expect one data per property for each collection cycle.
 
-If you emit multiple values for the same property concurrently before a full object is assembled, the internal SharedFlow will only use the latest value it received. This can lead to "mixed data" results. For advanced concurrent scenarios, a GroupedDataCollector is planned for a future release.
+If you emit multiple values for the same property concurrently before a full object is assembled, the internal SharedFlow will only use the latest value it received. This can lead to "mixed data" results. For advanced concurrent scenarios, a `GroupedDataCollector` is planned for a future release.
 
 ---
 
@@ -145,7 +148,7 @@ If you emit multiple values for the same property concurrently before a full obj
 
 Automatic Cleanup: After the collector has finished its work (e.g., after collectorCount is met), it will automatically cancel() itself to release all resources.
 
-Manual Cleanup: If you need to stop the collection process early, you can manually call collector.cancel() at any time.
+Manual Cleanup: If you need to stop the collection process early, you can manually call `collector.cancel()` at any time.
 
 ---
 
@@ -156,12 +159,12 @@ The main rule validates that the type of the value you pass to emit matches the 
 
 Example of code that will now fail the build:
 ```Kotlin
-data class MyData(val name: String, val age: Int)
+data class UserData(val name: String, val age: Int)
 
 val collector = DataCollector.collectSingle<MyData> { /* ... */ }
 
 // ❌ BUILD ERROR: The lint check will flag this line.
-collector.emit(MyData::age, "25") // Expected Int, but got a String
+collector.emit(UserData::age, "25") // Expected Int, but got a String
 ```
 The build will fail with a clear error: Type mismatch. Property expects type Int but received String.
 
@@ -171,7 +174,6 @@ The build will fail with a clear error: Type mismatch. Property expects type Int
 ```Kotlin
 import com.nodrex.datacollector.DataCollector
 import com.nodrex.datacollector.annotations.CollectableData
-import kotlinx.coroutines.*
 
 // --- 1. Define Your Data Models ---
 
@@ -201,43 +203,42 @@ data class MyData(
 // Simulates fetching from a local database (fast)
 suspend fun fetchAccountFromDb(): UserAccount {
     delay(200)
-    println("✅ Account fetched from DB")
+    Log.d("TAG" ,"✅ Account fetched from DB")
     return UserAccount("user-123", "test@example.com")
 }
 suspend fun fetchSettingsFromDb(): UserSettings {
     delay(300)
-    println("✅ Settings fetched from DB")
+    Log.d("TAG" ,"✅ Settings fetched from DB")
     return UserSettings("Dark Mode")
 }
 
 // Simulates a network call with Retrofit (slower)
 suspend fun fetchUserDataFromNetwork(): UserData {
     delay(800)
-    println("✅ UserData fetched from Network")
+    Log.d("TAG" ,"✅ UserData fetched from Network")
     return UserData("Nodrex", 1024)
 }
 
 // Simulates loading an image from a file (medium speed)
 suspend fun loadImageFromFile(): Bitmap {
     delay(500)
-    println("✅ Image loaded from File")
-    return Bitmap("local_storage")
+    Log.d("TAG" ,"✅ Image loaded from File")
+    return Bitmap("file//storage//local_storage")
 }
 
 
 // --- 3. Use the Collector to Wait for All Data ---
 
 suspend fun main() = coroutineScope {
-    println("🚀 Starting to collect all user Data...")
+    Log.d("TAG" ,"🚀 Starting to collect all Data...")
 
     val collector = DataCollector.collectSingle<MyData>(
         onResult = { result, error ->
             if (result != null) {
                 // This block is only called when ALL data is ready
-                println("\n🎉 All Data collected! Assembled object:")
-                println(result)
+                Log.d("TAG" ,"🎉 All Data collected! Assembled object: $result")
             } else {
-                println("Failed to collect Data: ${error?.message}")
+                Log.d("TAG" ,"Failed to collect Data: ${error?.message}")
             }
         }
     )
@@ -261,17 +262,13 @@ suspend fun main() = coroutineScope {
 ---
 
 ## 🗺️ Roadmap (Phase 2)
-Kotlin-multiplatform support
-
 Future versions of this library will include:
 
-A GroupedDataCollector for robust concurrent data collection.
-
-Support for regular classes and full Java interoperability.
-
-Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope, lifeCycleScope and so on).
-
-Optional timeout parameter to prevent the collector from waiting forever if one of the expected events never arrives.
+- Kotlin-multiplatform support
+- A `GroupedDataCollector` for robust concurrent data collection.
+- Support for regular classes and full Java interoperability.
+- Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope, lifeCycleScope and so on).
+- Optional timeout parameter to prevent the collector from waiting forever if one of the expected data never arrives.
 
 ---
 ## 📜 License
