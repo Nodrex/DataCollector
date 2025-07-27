@@ -8,7 +8,7 @@ It's a lightweight, reflection-based tool perfect for scenarios where you need t
 
 <img width="687" height="689" alt="Untitled drawing" src="https://github.com/user-attachments/assets/21c0f437-7d20-4e75-8f50-df95f6dd9b84" />
 
-## ✨ Features
+## ✨ Features 
 
 ✅ Type-Safe by Design: Uses Kotlin reflection and generics to provide a fully type-safe result object.
 
