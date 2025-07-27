@@ -268,7 +268,7 @@ Future versions of this library will include:
 
 - Kotlin-multiplatform support
 - A `GroupedDataCollector` for robust concurrent data collection.
-- Support for regular classes and full Java interoperability.
+- Support for regular classes in parallel to Kotlin data classes.
 - Automatic cancellation via parent CoroutineScopes (e.g., viewModelScope, lifeCycleScope and so on).
 - Optional timeout parameter to prevent the collector from waiting forever if one of the expected data never arrives.
 
