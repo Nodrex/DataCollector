@@ -6,7 +6,9 @@ DataCollector simplifies the orchestration of multiple asynchronous data sources
 
 It's a lightweight, reflection-based tool perfect for scenarios where you need to wait for responses from multiple asynchronous sources—such as network calls, database queries, or file reads—before taking a final action.
 
-## ✨ Features
+<img width="687" height="689" alt="Untitled drawing" src="https://github.com/user-attachments/assets/21c0f437-7d20-4e75-8f50-df95f6dd9b84" />
+
+## ✨ Features 
 
 ✅ Type-Safe by Design: Uses Kotlin reflection and generics to provide a fully type-safe result object.
 
